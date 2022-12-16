@@ -2,7 +2,7 @@ CREATE TABLE if not exists USERS(
      id INT AUTO_INCREMENT,
      login VARCHAR(255),
      password VARCHAR(255),
-     role VARCHAR(30),
+     #role VARCHAR(30),
      PRIMARY KEY (id)
 );
 

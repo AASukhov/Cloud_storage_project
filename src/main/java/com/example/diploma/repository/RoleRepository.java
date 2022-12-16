@@ -1,11 +1,11 @@
 package com.example.diploma.repository;
 
-import com.example.diploma.entity.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
-
-public interface RoleRepository extends JpaRepository<Role, Integer> {
-
-    Optional<Role> findByName(String name);
-}
+//import com.example.diploma.entity.Role;
+//import org.springframework.data.jpa.repository.JpaRepository;
+//
+//import java.util.Optional;
+//
+//public interface RoleRepository extends JpaRepository<Role, Integer> {
+//
+//    Optional<Role> findByName(String name);
+//}

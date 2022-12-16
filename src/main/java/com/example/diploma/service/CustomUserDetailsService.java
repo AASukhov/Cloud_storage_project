@@ -1,6 +1,6 @@
-package com.example.diploma.security;
+package com.example.diploma.service;
 
-import com.example.diploma.entity.Role;
+//import com.example.diploma.entity.Role;
 import com.example.diploma.entity.User;
 import com.example.diploma.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,12 +28,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
         User user = userRepository.findUserByLogin(login).orElseThrow(()-> new UsernameNotFoundException("Username not found"));
-        return new org.springframework.security.core.userdetails.User(user.getLogin(),user.getPassword(),mapRolesToAuthorities(user.getRoles()));
+        return new org.springframework.security.core.userdetails.User(user.getLogin(),user.getPassword(),authorities);
     }
-
-    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles){
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-    }
-
 }

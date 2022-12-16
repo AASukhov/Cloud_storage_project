@@ -3,9 +3,9 @@ package com.example.diploma.controller;
 import com.example.diploma.dto.AuthResponseDto;
 import com.example.diploma.dto.LoginDto;
 import com.example.diploma.dto.UserDto;
-import com.example.diploma.entity.Role;
+//import com.example.diploma.entity.Role;
 import com.example.diploma.entity.User;
-import com.example.diploma.repository.RoleRepository;
+//import com.example.diploma.repository.RoleRepository;
 import com.example.diploma.repository.UserRepository;
 import com.example.diploma.security.JwtCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class AuthController {
 
     private AuthenticationManager manager;
     private UserRepository userRepository;
-    private RoleRepository roleRepository;
+//    private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
     private JwtCreator creator;
@@ -34,12 +34,12 @@ public class AuthController {
     @Autowired
     public AuthController(AuthenticationManager manager,
                           UserRepository userRepository,
-                          RoleRepository roleRepository,
+//                          RoleRepository roleRepository,
                           PasswordEncoder passwordEncoder,
                           JwtCreator creator) {
         this.manager = manager;
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+//        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.creator = creator;
 
@@ -64,8 +64,8 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        Role roles = roleRepository.findByName("USER").get();
-        user.setRoles(Collections.singletonList(roles));
+//        Role roles = roleRepository.findByName("USER").get();
+//        user.setRoles(Collections.singletonList(roles));
         userRepository.save(user);
         return new ResponseEntity<>("User registered", HttpStatus.OK);
     }
