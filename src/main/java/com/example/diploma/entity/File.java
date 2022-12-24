@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Builder
-@Table (name = "Files")
+@Table (name = "files")
 @AllArgsConstructor
 @NoArgsConstructor
 public class File {

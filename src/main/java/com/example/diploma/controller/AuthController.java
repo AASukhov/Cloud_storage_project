@@ -3,11 +3,10 @@ package com.example.diploma.controller;
 import com.example.diploma.dto.AuthResponseDto;
 import com.example.diploma.dto.LoginDto;
 import com.example.diploma.dto.UserDto;
-//import com.example.diploma.entity.Role;
 import com.example.diploma.entity.User;
-//import com.example.diploma.repository.RoleRepository;
 import com.example.diploma.repository.UserRepository;
 import com.example.diploma.security.JwtCreator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,15 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-
 @RestController
-@RequestMapping("/api/auth")
+@Slf4j
+@RequestMapping()
 public class AuthController {
 
     private AuthenticationManager manager;
     private UserRepository userRepository;
-//    private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
     private JwtCreator creator;
@@ -64,8 +61,6 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-//        Role roles = roleRepository.findByName("USER").get();
-//        user.setRoles(Collections.singletonList(roles));
         userRepository.save(user);
         return new ResponseEntity<>("User registered", HttpStatus.OK);
     }

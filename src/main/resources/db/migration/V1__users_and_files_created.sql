@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS FILES(
      size LONG,
      type VARCHAR(255),
      content LONGBLOB,
+     user_id INT,
      PRIMARY KEY (id)
 );
 
@@ -21,7 +22,7 @@ CREATE TABLE IF NOT EXISTS FILES(
 #        ('reader@gmail.ru', '1111','USER'),
 #        ('editor@gmail.ru', '2222','USER');
 
-INSERT INTO FILES (filename, date, size, type, content)
-VALUES ('default','2022-03-11 12:13:14', 128, 'txt', 123),
-       ('qwerty','2022-05-16 13:14:15', 128, 'txt', 123),
-       ('config','2022-07-23 15:16:17', 128, 'txt', 123);
+INSERT INTO FILES (filename, date, size, type, content, user_id)
+VALUES ('default','2022-03-11 12:13:14', 128, 'text/plain', 123, 1),
+       ('qwerty','2022-05-16 13:14:15', 128, 'text/plain', 123, 2),
+       ('config','2022-07-23 15:16:17', 128, 'text/plain', 123, 1);

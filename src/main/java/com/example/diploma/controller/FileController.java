@@ -6,7 +6,6 @@ import com.example.diploma.dto.FileResponseDto;
 import com.example.diploma.entity.File;
 import com.example.diploma.service.FileService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,18 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/file")
 public class FileController {
 
-    private FileService service;
+    private final FileService service;
 
     @PostMapping()
     public ResponseEntity<?> uploadFile(@RequestHeader("auth-token") String authToken,
-                                        @RequestParam("filename") String filename, MultipartFile file) {
+                                        @RequestParam("filename") String filename,
+                                        @RequestBody MultipartFile file) {
         service.uploadFile(authToken, filename, file);
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -50,13 +49,8 @@ public class FileController {
     @PutMapping()
     public ResponseEntity<?> editFileName(@RequestHeader("auth-token") String authToken,
                                           @RequestParam("filename") String filename,
-                                          @RequestBody FileDto file) {
-        service.editFileName(authToken, filename, file.getFilename());
+                                          @RequestParam ("new-filename") String newFilename) {
+        service.editFileName(authToken, filename, newFilename);
         return ResponseEntity.ok(HttpStatus.OK);
-    }
-
-    @GetMapping("/list")
-    List<FileResponseDto> getAllFiles(@RequestHeader("auth-token") String authToken, @RequestParam("limit") Integer limit) {
-        return service.getAllFiles(authToken);
     }
 }

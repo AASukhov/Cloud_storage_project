@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 ;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional
 public class FileService {
 
     FileRepository fileRepository;
@@ -40,7 +42,7 @@ public class FileService {
             throw new UnauthorizedUserException("Unauthorized user");
         }
         try {
-            File file1 = new File(filename, LocalDateTime.now(), file.getSize(), file.getContentType(), file.getBytes(), user);
+            File file1 = new File(filename, LocalDateTime.now(), file.getSize(), file.getContentType(), file.getBytes(),user);
             fileRepository.save(file1);
             log.info("User {} upload file {}", user.getLogin(), filename);
         } catch (IOException e) {
@@ -85,24 +87,30 @@ public class FileService {
             throw new FileException("Problem to correct the name of file");
         }
     }
-
-    public List<FileResponseDto> getAllFiles (String authToken) {
+    public List<FileResponseDto> getAllFiles(String authToken, Integer limit) {
         final User user = getUser(authToken);
         if (user == null) {
             log.error("Get all files error");
-            throw new UnauthorizedUserException("Unauthorized user");
+            throw new UnauthorizedUserException("Unauthorized error");
         }
+        log.info("User {} get all files", user.getLogin());
         return fileRepository.findAllByUser(user, Sort.by("filename")).stream()
                 .map(f -> new FileResponseDto(f.getFilename(), f.getSize()))
                 .collect(Collectors.toList());
     }
-
     private User getUser(String authToken) {
         if (authToken.startsWith("Bearer ")) {
             authToken = authToken.substring(7);
         }
         final String login = creator.getLoginFromToken(authToken);
+        log.info(login);
         return userRepository.findUserByLogin(login)
                 .orElseThrow(() -> new UnauthorizedUserException("Unauthorized user"));
+    }
+
+    public String isUserExisting(String login) {
+        if (userRepository.existsByLogin(login)) {
+            return "User is existing";
+        } else return "Unknown user";
     }
 }

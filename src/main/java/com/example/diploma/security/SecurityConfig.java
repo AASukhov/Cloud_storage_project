@@ -4,8 +4,10 @@ import com.example.diploma.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,9 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
     private JwtEntryPoint entryPoint;
@@ -30,20 +34,31 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception{
-        http
-                .csrf().disable()
+        http.addFilterBefore(filter(), UsernamePasswordAuthenticationFilter.class);
+        http.cors().and().csrf().disable().headers().frameOptions().disable()
+                .and()
+                .authorizeRequests()
+                .antMatchers("/login","/register")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/file**","/user")
+//                .permitAll()
+
+                .and()
+                .logout().invalidateHttpSession(true)
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+                .clearAuthentication(true)
+                .logoutSuccessUrl("/login")
+
+                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(entryPoint)
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
-        http.addFilterBefore(filter(), UsernamePasswordAuthenticationFilter.class);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
     }
 
