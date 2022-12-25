@@ -1,5 +1,7 @@
-package com.example.diploma.security;
+package com.example.diploma.config;
 
+import com.example.diploma.security.JwtEntryPoint;
+import com.example.diploma.security.JwtFilter;
 import com.example.diploma.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +37,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception{
         http.addFilterBefore(filter(), UsernamePasswordAuthenticationFilter.class);
-        http.cors().and().csrf().disable().headers().frameOptions().disable()
+        http./*cors().and().*/csrf().disable().headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login","/register")
@@ -46,12 +48,17 @@ public class SecurityConfig {
 //                .authorizeRequests()
 //                .antMatchers("/file**","/user")
 //                .permitAll()
-
+//
                 .and()
-                .logout().invalidateHttpSession(true)
+//                .logout()
+//                .invalidateHttpSession(true)
+//                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
+//                .clearAuthentication(true)
+//                .logoutSuccessUrl("/login")
+                .logout()
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-                .clearAuthentication(true)
-                .logoutSuccessUrl("/login")
 
                 .and()
                 .exceptionHandling()

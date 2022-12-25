@@ -4,6 +4,7 @@ import com.example.diploma.dto.AuthResponseDto;
 import com.example.diploma.dto.LoginDto;
 import com.example.diploma.dto.UserDto;
 import com.example.diploma.entity.User;
+import com.example.diploma.exception.UnauthorizedUserException;
 import com.example.diploma.repository.UserRepository;
 import com.example.diploma.security.JwtCreator;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @RestController
 @Slf4j
@@ -64,4 +70,17 @@ public class AuthController {
         userRepository.save(user);
         return new ResponseEntity<>("User registered", HttpStatus.OK);
     }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request,
+                         HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+            request.getSession().invalidate();
+        }
+
+        return new ResponseEntity<>("successfully logged out", HttpStatus.PERMANENT_REDIRECT);
+    }
+
 }
