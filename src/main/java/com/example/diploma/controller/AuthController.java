@@ -10,6 +10,7 @@ import com.example.diploma.security.JwtCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 @RestController
 @Slf4j
@@ -37,39 +37,41 @@ public class AuthController {
     @Autowired
     public AuthController(AuthenticationManager manager,
                           UserRepository userRepository,
-//                          RoleRepository roleRepository,
                           PasswordEncoder passwordEncoder,
                           JwtCreator creator) {
         this.manager = manager;
         this.userRepository = userRepository;
-//        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.creator = creator;
-
     }
 
-    @PostMapping("/login")
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponseDto> login (@RequestBody LoginDto loginDto) {
         Authentication authentication = manager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getLogin(),loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = creator.createToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
-    }
-
-    @PostMapping ("/register")
-    public ResponseEntity<String> register (@RequestBody UserDto userDto) {
-        if (userRepository.existsByLogin(userDto.getLogin())) {
-            return new ResponseEntity<>("Username is taken", HttpStatus.BAD_REQUEST);
+        AuthResponseDto responseDto = new AuthResponseDto(token);
+        if (responseDto.getAccessToken() == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        User user = new User();
-        user.setLogin(userDto.getLogin());
-
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
-        userRepository.save(user);
-        return new ResponseEntity<>("User registered", HttpStatus.OK);
+        return ResponseEntity.ok(responseDto);
     }
+
+//    @PostMapping ("/register")
+//    public ResponseEntity<String> register (@RequestBody UserDto userDto) {
+//        if (userRepository.existsByLogin(userDto.getLogin())) {
+//            return new ResponseEntity<>("Username is taken", HttpStatus.BAD_REQUEST);
+//        }
+//        User user = new User();
+//        user.setLogin(userDto.getLogin());
+//
+//        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+//
+//        userRepository.save(user);
+//        return new ResponseEntity<>("User registered", HttpStatus.OK);
+//    }
+
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request,
                          HttpServletResponse response) {
@@ -82,5 +84,4 @@ public class AuthController {
 
         return new ResponseEntity<>("successfully logged out", HttpStatus.PERMANENT_REDIRECT);
     }
-
 }

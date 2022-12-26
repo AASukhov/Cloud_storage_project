@@ -37,24 +37,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityChain (HttpSecurity http) throws Exception{
         http.addFilterBefore(filter(), UsernamePasswordAuthenticationFilter.class);
-        http./*cors().and().*/csrf().disable().headers().frameOptions().disable()
+        http.cors().and().csrf().disable().headers().frameOptions().disable()
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login","/register")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/file**","/user")
-//                .permitAll()
-//
+
                 .and()
-//                .logout()
-//                .invalidateHttpSession(true)
-//                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
-//                .clearAuthentication(true)
-//                .logoutSuccessUrl("/login")
                 .logout()
                 .logoutUrl("/logout")
                 .invalidateHttpSession(true)

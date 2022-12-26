@@ -1,8 +1,6 @@
 package com.example.diploma.controller;
 
 
-import com.example.diploma.dto.FileDto;
-import com.example.diploma.dto.FileResponseDto;
 import com.example.diploma.entity.File;
 import com.example.diploma.service.FileService;
 import lombok.AllArgsConstructor;
