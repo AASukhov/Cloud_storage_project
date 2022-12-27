@@ -1,6 +1,5 @@
 package com.example.diploma.entity;
 
-import com.example.diploma.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  app:
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/db_diploma
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 49918003
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+  database:
+    image: mysql/mysql-server:latest
+    container_name: 'db_diploma'
+    volumes:
+      - /mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: 49918003
+      MYSQL_ROOT_PASSWORD: 49918003
+      MYSQL_DATABASE: db_diplomaDb
+    ports:
+      - "4000:4000"

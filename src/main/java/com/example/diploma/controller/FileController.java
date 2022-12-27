@@ -1,6 +1,7 @@
 package com.example.diploma.controller;
 
 
+import com.example.diploma.dto.FileDto;
 import com.example.diploma.entity.File;
 import com.example.diploma.service.FileService;
 import lombok.AllArgsConstructor;
@@ -47,8 +48,8 @@ public class FileController {
     @PutMapping()
     public ResponseEntity<?> editFileName(@RequestHeader("auth-token") String authToken,
                                           @RequestParam("filename") String filename,
-                                          @RequestParam ("new-filename") String newFilename) {
-        service.editFileName(authToken, filename, newFilename);
+                                          @RequestBody FileDto fileDto) {
+        service.editFileName(authToken, filename, fileDto.getFilename());
         return ResponseEntity.ok(HttpStatus.OK);
     }
 }
