@@ -2,22 +2,11 @@ package com.example.diploma.controller;
 
 import com.example.diploma.dto.AuthResponseDto;
 import com.example.diploma.dto.LoginDto;
-import com.example.diploma.dto.UserDto;
-import com.example.diploma.entity.User;
-import com.example.diploma.exception.UnauthorizedUserException;
-import com.example.diploma.repository.UserRepository;
-import com.example.diploma.security.JwtCreator;
+import com.example.diploma.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,60 +17,21 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping()
 public class AuthController {
 
-    private AuthenticationManager manager;
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
-
-    private JwtCreator creator;
+    private AuthService service;
 
     @Autowired
-    public AuthController(AuthenticationManager manager,
-                          UserRepository userRepository,
-                          PasswordEncoder passwordEncoder,
-                          JwtCreator creator) {
-        this.manager = manager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.creator = creator;
+    public AuthController(AuthService service) {
+        this.service = service;
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthResponseDto> login (@RequestBody LoginDto loginDto) {
-        Authentication authentication = manager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getLogin(),loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = creator.createToken(authentication);
-        AuthResponseDto responseDto = new AuthResponseDto(token);
-        if (responseDto.getAccessToken() == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        return ResponseEntity.ok(responseDto);
+        return service.login(loginDto);
     }
-
-//    @PostMapping ("/register")
-//    public ResponseEntity<String> register (@RequestBody UserDto userDto) {
-//        if (userRepository.existsByLogin(userDto.getLogin())) {
-//            return new ResponseEntity<>("Username is taken", HttpStatus.BAD_REQUEST);
-//        }
-//        User user = new User();
-//        user.setLogin(userDto.getLogin());
-//
-//        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-//
-//        userRepository.save(user);
-//        return new ResponseEntity<>("User registered", HttpStatus.OK);
-//    }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request,
                          HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext()
-                .getAuthentication();
-        if (auth != null) {
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-            request.getSession().invalidate();
-        }
-
-        return new ResponseEntity<>("successfully logged out", HttpStatus.PERMANENT_REDIRECT);
+        return service.logout(request, response);
     }
 }

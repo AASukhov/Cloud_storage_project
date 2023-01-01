@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class FileService {
 
-    FileRepository fileRepository;
+    private FileRepository fileRepository;
 
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    JwtCreator creator;
+    private JwtCreator creator;
 
     public FileService (FileRepository fileRepository, UserRepository userRepository, JwtCreator creator) {
         this.fileRepository = fileRepository;
@@ -106,11 +106,5 @@ public class FileService {
         log.info(login);
         return userRepository.findUserByLogin(login)
                 .orElseThrow(() -> new UnauthorizedUserException("Unauthorized user"));
-    }
-
-    public String isUserExisting(String login) {
-        if (userRepository.existsByLogin(login)) {
-            return "User is existing";
-        } else return "Unknown user";
     }
 }

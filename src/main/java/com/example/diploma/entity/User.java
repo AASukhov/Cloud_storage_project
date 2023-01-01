@@ -24,6 +24,4 @@ public class User {
 
     private String password;
 
-//    @OneToMany (cascade = CascadeType.ALL)
-//    private List<File> files;
 }
